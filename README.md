@@ -1,7 +1,7 @@
 
 # 🧠 Operating System Development
 
-Welcome to my custom operating system development project, inspired by Nanobyte. This project is a hands-on exploration of low-level systems programming, focusing on creating a minimal yet functional operating system from scratch using Assembly, C, and x86 architecture fundamentals.
+Welcome to my custom operating system development project. This project is a hands-on exploration of low-level systems programming, focusing on creating a minimal yet functional operating system from scratch using Assembly, C, and x86 architecture fundamentals.
 
 > **Project Maintainer**: Justin Thomas
 
@@ -9,7 +9,7 @@ Welcome to my custom operating system development project, inspired by Nanobyte.
 
 ## 📌 Project Overview
 
-This project is an educational endeavor where I (Justin Thomas) build an operating system step-by-step, closely following Nanobyte’s video tutorials and GitHub source. The goal is to understand how modern operating systems work under the hood by building each component from the ground up.
+This project is an educational endeavor where I (Justin Thomas) build an operating system step-by-step. The goal is to understand how modern operating systems work under the hood by building each component from the ground up.
 
 ---
 
@@ -79,12 +79,6 @@ qemu-system-i386 -cdrom build/os.iso
 
 ---
 
-## 🔍 Credits & Inspiration
-
-This entire project is based on the excellent work by Nanobyte. The series provides an excellent breakdown of OS fundamentals in a practical, project-driven format.
-
----
-
 ## ✅ Future Goals
 
 - Implement keyboard input handling
@@ -97,4 +91,4 @@ This entire project is based on the excellent work by Nanobyte. The series provi
 
 ## 📝 License
 
-This project is created and maintained by **Justin Thomas** for educational purposes. Some components may be inspired or directly based on open-source examples provided by Nanobyte.
+This project is created and maintained by **Justin Thomas** for educational purposes.
