@@ -92,3 +92,10 @@ qemu-system-i386 -cdrom build/os.iso
 ## 📝 License
 
 This project is created and maintained by **Justin Thomas** for educational purposes.
+
+
+---
+
+## 🔍 Credits & Inspiration
+
+This project draws inspiration from various open-source OS development resources, low-level programming documentation, and community tutorials on operating system fundamentals. Special thanks to all contributors in the open-source space who share their knowledge to help others learn and grow.
