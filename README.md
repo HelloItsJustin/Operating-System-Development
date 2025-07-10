@@ -1,11 +1,11 @@
 # 🧠 Jetson Operating System
 
 <p align="center">
- <img src="./screenshot.png" alt="OS Boot Screen" width="500"/>
+ <img src="screenshot.png" alt="OS Boot Screen" width="600"/>
 </p>
 
 <p align="center">
- <img src="./screenshot1.png" alt="Memory Map Log" width="500"/>
+ <img src="screenshot1.png" alt="Memory Map Log" width="600"/>
 </p>
 
 A bootable x86 operating system built from scratch using Assembly and C, following a structured step-by-step OS development guide.  
