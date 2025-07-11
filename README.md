@@ -1,15 +1,14 @@
 # 🧠 Jetson Operating System
 
 <p align="center">
- <img src="screenshot.png" alt="OS Boot Screen" width="600"/>
+ <img src="screenshot.png" alt="OS Boot Screen With Memory Log and v0.2 chanelog" width="600"/>
 </p>
 
 <p align="center">
- <img src="screenshot1.png" alt="Memory Map Log" width="600"/>
+ <img src="screenshot1.png" alt="Tic-Tac-Toe Game using low-level input" width="600"/>
 </p>
 
-A bootable x86 operating system built from scratch using Assembly and C, following a structured step-by-step OS development guide.  
-Includes a custom bootloader, FAT12 filesystem loader, memory logging display, VGA output, and printf() support—all running inside QEMU.
+A bootable x86 operating system built entirely from scratch using Assembly and C, Jetson OS is a hands-on journey into OS development. It features a multistage bootloader, FAT12 filesystem loader, memory diagnostics display, VGA-based console output, keyboard input, and even a built-in terminal game—all running in QEMU.
 
 > Author / Maintainer: Justin Thomas
 
@@ -17,38 +16,42 @@ Includes a custom bootloader, FAT12 filesystem loader, memory logging display, V
 
 ## 📌 Overview
 
-This project is a hands-on exploration of low-level systems programming and OS internals. By implementing each component—from the 16-bit bootloader to the C-based kernel—you gain a deep understanding of how hardware and software interact at the bare-metal level.
+Jetson OS is designed to teach and demonstrate the internals of an operating system by walking through each level of system interaction. From BIOS interrupt calls and filesystem parsing to C-based kernel development and interactive utilities, this project serves both as a foundational OS and an educational tool.
 
 ---
 
-## 🛠️ What I Built
+## 🚀 What’s New in Jetson OS v0.2
 
-This operating system project includes the following key components and features:
+```
+──────────────────────────────────────────────
+🆕 Jetson OS Version 0.2 — Feature Highlights
+──────────────────────────────────────────────
+```
 
-- A **custom BIOS-compatible bootloader** written in Assembly that initializes the system.
-- A **FAT12 filesystem loader** capable of reading disk sectors and traversing subdirectories.
-- A **C-based kernel** that takes over after bootloader execution.
-- A **minimal printf() implementation** using `va_list` for formatted output.
-- **VGA text output** for displaying information directly on the screen via the VGA buffer.
-- A **memory log display** that shows BIOS-provided memory maps and diagnostics during boot.
-- An automated **build system using SCons** for compiling and linking all components.
-- Integration with **QEMU** for emulation and testing of the bootable disk image.
+- 🕹️ **Tic-Tac-Toe Game**: A fully interactive, two-player terminal-based game implemented inside the kernel. Designed to showcase user interaction, game logic, and text-based UI on a bare-metal OS.
+- ⌨️ **Keyboard Input Support**: Basic PS/2 keyboard support added using polling via I/O ports. Supports ASCII character entry with key release filtering.
+- 🪵 **Logging System**: `log_debug`, `log_info`, `log_warn`, `log_err`, and `log_crit` functions added for structured message output, improving kernel diagnostics.
+- 📢 **User-Friendly Boot Messages**: A redesigned startup sequence that prints Jetson OS version, boot messages, and update notes before game launch.
+- ⏱️ **"Press any key to start" Delay**: A blocking input mechanism added to wait for user input before proceeding to game or shell.
+- 🎨 **Formatted VGA Output Enhancements**: Improved formatting in `printf`, including support for `%x`, `%d`, `%s`, and alignment of logs.
 
 ---
 
-## 🛠️ Features Implemented
+## 🛠️ Core System Features
 
-| Feature                  | Description                                         |
-|--------------------------|-----------------------------------------------------|
-| ✅ Bootloader            | Custom BIOS-compatible bootloader in Assembly       |
-| ✅ Disk Reading (INT 13h) | Sector-based disk access using BIOS interrupts      |
-| ✅ FAT12 Filesystem      | FAT12 support with subdirectory traversal            |
-| ✅ Kernel in C           | Bootloader hands control to a C-based kernel         |
-| ✅ printf()              | Minimal printf() implemented using va_list           |
-| ✅ VGA Text Output       | Writes text in real mode via VGA buffer (0xB8000)    |
-| ✅ Memory Log Display    | Displays BIOS-provided memory map and diagnostics    |
-| ✅ Build System          | Automated with SCons                                  |
-| ✅ QEMU Integration      | Bootable disk image tested in QEMU                    |
+| Feature                  | Description                                                    |
+|--------------------------|----------------------------------------------------------------|
+| ✅ Bootloader            | Custom BIOS-compatible stage1 and stage2 bootloaders (ASM/C)   |
+| ✅ Disk Reading (INT 13h)| Low-level disk I/O using BIOS interrupts                        |
+| ✅ FAT12 Filesystem      | FAT12 parsing and file reading with subdirectory traversal      |
+| ✅ Kernel in C           | Modular kernel written in C with system initialization logic    |
+| ✅ printf()              | Variadic formatted output for both console and log streams      |
+| ✅ VGA Text Output       | Direct screen manipulation using memory-mapped VGA buffer       |
+| ✅ Memory Log Display    | Logs BIOS memory map (via INT 15h, E820) to help debugging      |
+| ✅ Keyboard Input        | Polling-based PS/2 input with scan code filtering               |
+| ✅ Terminal Game         | Built-in Tic-Tac-Toe game using raw kernel input/output         |
+| ✅ Logging API           | Colored and leveled logging for debug and runtime analysis      |
+| ✅ QEMU Integration      | Seamless boot and test environment via QEMU                     |
 
 ---
 
@@ -70,17 +73,17 @@ This operating system project includes the following key components and features
 
 ## ⚙️ Development Environment
 
-- OS: Ubuntu (via WSL or native Linux)  
-- Compiler Toolchain: Custom i686-elf-gcc cross-compiler  
+- OS: Ubuntu Linux (or WSL on Windows)  
+- Compiler Toolchain: Custom i686-elf GCC cross-compiler  
 - Emulator: QEMU (qemu-system-i386)  
-- Image Tools: libguestfs, guestmount, supermin  
-- Build System: SCons  
+- Image Tools: guestmount, supermin, libguestfs  
+- Build System: SCons
 
 ---
 
 ## 🧪 Setup & Usage
 
-1. Install toolchain  
+1. Install the toolchain  
 ```bash
 cd toolchain
 bash setup.sh
@@ -91,55 +94,58 @@ bash setup.sh
 scons
 ```
 
-3. Run in QEMU  
+3. Run the OS in QEMU  
 ```bash
 sudo ./scripts/run.sh disk build/i686_debug/image.img
 ```
 
-*Note: sudo is required for guestmount during image creation.*
+*Note: Root permissions may be required to mount images with guestmount.*
 
 ---
 
 ## 🧠 Concepts Demonstrated
 
-- BIOS interrupt programming (INT 13h, INT 10h)  
+- BIOS interrupt programming (INT 13h, INT 10h, INT 15h)  
 - Real-mode to protected-mode bootstrapping  
-- Sector I/O and FAT12 filesystem parsing  
+- FAT12 filesystem parsing and subdirectory handling  
 - Memory-mapped VGA text rendering  
-- Custom printf() with variable arguments  
-- BIOS memory map logging and display  
-- Bare-metal C kernel without libc  
-- Automated image creation and QEMU testing  
+- Bare-metal keyboard input via I/O port polling  
+- Custom `printf()` and `log_*()` system  
+- Simple input-based game logic in kernel space  
+- Cross-compilation and bare-metal testing with QEMU
 
 ---
 
-## 🎯 Planned Future Additions
+## 🎯 Future Plans
 
-- ⌨️ PS/2 keyboard input and interrupt handling  
-- 🐚 Basic shell interface (CLI)  
-- 📦 Dynamic memory allocator (heap and paging)  
-- 🧱 Protected-mode enhancements  
-- 🔁 Simple task scheduler for multitasking  
+- 🐚 Shell Interface: Basic command line interpreter
+- 🧠 Memory Manager: Paging, heap allocation, free lists
+- 🔁 Task Scheduler: Simple round-robin tasking support
+- 🧱 Full Protected Mode: Paging, segmentation, IDT overhaul
+- 🧩 Modular Kernel Features: Device drivers and modularity
 
 ---
 
 ## ✅ What I’ve Learned
 
-- End-to-end OS bootloader and kernel startup  
-- Low-level disk I/O and filesystem implementation  
-- BIOS interrupt interaction  
-- Implementing a minimal C runtime and printf()  
-- Debugging bare-metal code with QEMU and E9 serial output  
-- Build automation for cross-platform bare-metal development  
+- Writing bootable disks and FAT12 file loaders  
+- Building kernels in C without standard libraries  
+- Implementing I/O port interaction and interrupts  
+- Organizing multi-stage builds and debugging low-level code  
+- Terminal games in raw kernel context (no user-space)
 
 ---
 
 ## 📝 License
 
-This project is developed and maintained by Justin Thomas for educational purposes.
+This project is developed and maintained by Justin Thomas for educational purposes only.
 
 ---
 
 ## 🔍 Acknowledgements
 
-Inspired by community tutorials and open-source OSDev resources. Special thanks to all authors and contributors whose guides made this learning journey possible.
+Inspired by the OSDev community, online tutorials, and public domain operating system resources. Special thanks to everyone who shares knowledge in this space.
+
+---
+
+**Jetson OS** is in dormant development. Stay tuned for v0.3 with more interactivity, memory management, and system calls !

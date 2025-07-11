@@ -1,27 +1,32 @@
 import os
-
 from SCons.Environment import Environment
 from build_scripts.utility import GlobRecursive, FindIndex, IsFileName
+from itertools import chain
 
 Import('TARGET_ENVIRONMENT')
 TARGET_ENVIRONMENT: Environment
 
+# Clone environment
 env = TARGET_ENVIRONMENT.Clone()
+
+# Add linker flags, include paths, and assembler flags
 env.Append(
-    LINKFLAGS = [
+    LINKFLAGS=[
         '-Wl,-T', env.File('linker.ld').srcnode().path,
         '-Wl,-Map=' + env.File('kernel.map').path
     ],
-    CPPPATH = [ 
+    CPPPATH=[
         env.Dir('.').srcnode(),
-        env['PROJECTDIR'].Dir('src/libs')
+        env['PROJECTDIR'].Dir('src/libs'),
+        env['PROJECTDIR'].Dir('src/kernel/arch/i686'),  # ✅ Include arch/i686 for inb/outb
     ],
-    ASFLAGS = [ '-I', env.Dir('.').srcnode(), '-f', 'elf' ]
+    ASFLAGS=[
+        '-I', env.Dir('.').srcnode(),
+        '-f', 'elf'
+    ]
 )
 
-# ✅ Collect sources, but exclude screen.c to avoid vga_putchar() conflict
-from itertools import chain
-
+# Collect all .c, .cpp, .asm files (exclude screen.c due to vga_putchar conflict)
 all_c_files = list(chain.from_iterable(GlobRecursive(env, '*.c')))
 sources = [
     src for src in all_c_files
@@ -36,12 +41,13 @@ objects = env.Object(sources)
 obj_crti = objects.pop(FindIndex(objects, lambda item: IsFileName(item, 'crti.o')))
 obj_crtn = objects.pop(FindIndex(objects, lambda item: IsFileName(item, 'crtn.o')))
 
+# Link against static libraries
 Import('libcore')
-
 static_libs = [
     libcore,
 ]
 
+# Final object list for linking
 objects = [
     obj_crti,
     os.path.join(env["TOOLCHAIN_LIBGCC"], 'crtbegin.o'),
@@ -58,5 +64,6 @@ kernel = env.Program('kernel.elf', objects)
 kernel_stripped = env.Command('kernel-stripped.elf', kernel, '$STRIP -o $TARGET $SOURCE')
 env.Default(kernel_stripped)
 
+# Export for higher-level scripts
 Export('kernel')
 Export('kernel_stripped')

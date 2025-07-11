@@ -5,6 +5,7 @@
 #include <stdbool.h>
 
 #include <hal/vfs.h>
+int VFS_Read(fd_t fd, void* buffer, uint32_t count);  // ✅ declare it
 
 void fputc(char c, fd_t file)
 {
@@ -262,4 +263,33 @@ void debugf(const char* fmt, ...)
 void debug_buffer(const char* msg, const void* buffer, uint32_t count)
 {
     fprint_buffer(VFS_FD_DEBUG, msg, buffer, count);
+}
+char getchr()
+{
+    unsigned char status;
+    unsigned char scancode;
+
+    // Wait for the output buffer to be full
+    do {
+        status = inb(0x64);  // Status port
+    } while ((status & 1) == 0);
+
+    // Read the scan code
+    scancode = inb(0x60);
+
+    // Basic scan code to ASCII conversion for letters and digits only
+    static const char scancode_map[128] = {
+        0,  27, '1','2','3','4','5','6','7','8','9','0','-','=', '\b', // 0x0
+        '\t','q','w','e','r','t','y','u','i','o','p','[',']','\n',    // 0x10
+        0,  'a','s','d','f','g','h','j','k','l',';','\'','`',         // 0x1E
+        0,  '\\','z','x','c','v','b','n','m',',','.','/', 0,          // 0x2A
+        '*', 0,  ' ', 0                                              // 0x37
+        // rest are ignored
+    };
+
+    // Ignore key releases (bit 7 set)
+    if (scancode & 0x80)
+        return 0;
+
+    return scancode_map[scancode];
 }

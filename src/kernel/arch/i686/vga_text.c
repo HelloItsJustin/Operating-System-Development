@@ -24,7 +24,17 @@ void VGA_putcolor(int x, int y, uint8_t color)
 {
     g_ScreenBuffer[2 * (y * SCREEN_WIDTH + x) + 1] = color;
 }
+void VGA_putc_at(int x, int y, char c)
+{
+    VGA_putchr(x, y, c);
+    VGA_putcolor(x, y, DEFAULT_COLOR);
+}
 
+void VGA_puts(const char* str)
+{
+    while (*str)
+        VGA_putc(*str++);
+}
 char VGA_getchr(int x, int y)
 {
     return g_ScreenBuffer[2 * (y * SCREEN_WIDTH + x)];

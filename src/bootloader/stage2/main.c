@@ -21,12 +21,20 @@ typedef void (*KernelStart)(BootParams* bootParams);
 
 void __attribute__((cdecl)) start(uint16_t bootDrive, void* partition)
 {
-    clrscr();
+    // RAW VGA test to confirm stage2 is reached
+    volatile char* video = (volatile char*)0xB8000;
+    video[0] = 'J';
+    video[1] = 0x07;
+    video[2] = 'O';
+    video[3] = 0x07;
+
+    // Simple print to check printf is working
+    printf("Stage 2: Bootloader started\n");
 
     DISK disk;
     if (!DISK_Initialize(&disk, bootDrive))
     {
-        printf("Disk init error\r\n");
+        printf("Disk init error\n");
         goto end;
     }
 
@@ -35,7 +43,7 @@ void __attribute__((cdecl)) start(uint16_t bootDrive, void* partition)
 
     if (!FAT_Initialize(&part))
     {
-        printf("FAT init error\r\n");
+        printf("FAT init error\n");
         goto end;
     }
 
@@ -43,15 +51,29 @@ void __attribute__((cdecl)) start(uint16_t bootDrive, void* partition)
     g_BootParams.BootDevice = bootDrive;
     Memory_Detect(&g_BootParams.Memory);
 
-    // load kernel
+    printf("Boot device: 0x%x\n", g_BootParams.BootDevice);
+    printf("Memory regions: %d\n", g_BootParams.Memory.RegionCount);
+
+    for (int i = 0; i < g_BootParams.Memory.RegionCount; i++)
+    {
+        printf("Region %d: start=0x%llx, length=0x%llx, type=%x\n",
+               i,
+               g_BootParams.Memory.Regions[i].Begin,
+               g_BootParams.Memory.Regions[i].Length,
+               g_BootParams.Memory.Regions[i].Type);
+    }
+
+    // Load kernel
     KernelStart kernelEntry;
     if (!ELF_Read(&part, "/boot/kernel.elf", (void**)&kernelEntry))
     {
-        printf("ELF read failed, booting halted!");
+        printf("ELF read failed. Halting.\n");
         goto end;
     }
 
-    // execute kernel
+    printf("Kernel loaded. Jumping to kernel...\n");
+
+    // Jump to kernel
     kernelEntry(&g_BootParams);
 
 end:

@@ -1,33 +1,26 @@
 import os
 import re
-import time
-from decimal import Decimal
-from io import SEEK_CUR, SEEK_SET
 from pathlib import Path
-from shutil import copy2
 import parted
 import sh
 
 from SCons.Action import Action
-from SCons.Builder import Builder
 from SCons.Environment import Environment
-
 from build_scripts.utility import FindIndex, GlobRecursive, IsFileName
 
 Import('stage1')
 Import('stage2')
 Import('kernel')
-
 Import('TARGET_ENVIRONMENT')
+
 TARGET_ENVIRONMENT: Environment
-env:Environment = TARGET_ENVIRONMENT
+env: Environment = TARGET_ENVIRONMENT
 
 SECTOR_SIZE = 512
 
 def generate_image_file(target: str, size_sectors: int):
     with open(target, 'wb') as fout:
         fout.write(bytes(size_sectors * SECTOR_SIZE))
-        fout.close()
 
 def create_filesystem(target: str, filesystem, reserved_sectors=0, offset=0):
     if filesystem in ['fat12', 'fat16', 'fat32']:
@@ -37,16 +30,10 @@ def create_filesystem(target: str, filesystem, reserved_sectors=0, offset=0):
 
         mkfs_fat = sh.Command('mkfs.fat')
         mkfs_fat(target,
-                 F=filesystem[3:],            # fat size
-                 n='NBOS',                    # label
-                 R=reserved_sectors,      # reserved sectors
+                 F=filesystem[3:],
+                 n='NBOS',
+                 R=reserved_sectors,
                  offset=offset
-        )
-    elif filesystem == 'ext2':
-        mkfs_ext2 = sh.Command('mkfs.ext2')
-        mkfs_ext2(target,
-                  L='NBOS',                   # label
-                  E=f'offset={offset * SECTOR_SIZE}'
         )
     else:
         raise ValueError('Unsupported filesystem ' + filesystem)
@@ -68,34 +55,36 @@ def install_stage1(target: str, stage1: str, stage2_offset, stage2_size, offset=
     entry_offset = find_symbol_in_map_file(map_file, '__entry_start')
     if entry_offset is None:
         raise ValueError("Can't find __entry_start symbol in map file " + str(map_file))
-    entry_offset -= 0x7c00
+    entry_offset -= 0x7C00
 
     stage2_start = find_symbol_in_map_file(map_file, 'stage2_location')
     if stage2_start is None:
         raise ValueError("Can't find stage2_location symbol in map file " + str(map_file))
-    stage2_start -= 0x7c00
+    stage2_start -= 0x7C00
 
     with open(stage1, 'rb') as fstage1:
-        with os.fdopen(os.open(target, os.O_WRONLY | os.O_CREAT), 'wb+') as ftarget:
-            ftarget.seek(offset * SECTOR_SIZE, SEEK_SET)
+        with os.fdopen(os.open(target, os.O_WRONLY | os.O_CREAT), 'rb+', buffering=0) as ftarget:
+            ftarget.seek(offset * SECTOR_SIZE)
             ftarget.write(fstage1.read(3))
-            fstage1.seek(entry_offset - 3, SEEK_CUR)
-            ftarget.seek(entry_offset - 3, SEEK_CUR)
+            fstage1.seek(entry_offset - 3, os.SEEK_CUR)
+            ftarget.seek(entry_offset - 3, os.SEEK_CUR)
             ftarget.write(fstage1.read())
-            ftarget.seek(offset * SECTOR_SIZE + stage2_start, SEEK_SET)
+            ftarget.seek(offset * SECTOR_SIZE + stage2_start)
             ftarget.write(stage2_offset.to_bytes(4, byteorder='little'))
             ftarget.write(stage2_size.to_bytes(1, byteorder='little'))
 
 def install_stage2(target: str, stage2: str, offset=0, limit=None):
     with open(stage2, 'rb') as fstage2:
-        with os.fdopen(os.open(target, os.O_WRONLY | os.O_CREAT), 'wb+') as ftarget:
-            ftarget.seek(offset * SECTOR_SIZE, SEEK_SET)
+        with os.fdopen(os.open(target, os.O_WRONLY | os.O_CREAT), 'rb+', buffering=0) as ftarget:
+            ftarget.seek(offset * SECTOR_SIZE)
             ftarget.write(fstage2.read())
 
 def build_disk(image, stage1, stage2, kernel, files, env):
     size_sectors = (env['imageSize'] + SECTOR_SIZE - 1) // SECTOR_SIZE
     file_system = env['imageFS']
     partition_offset = 2048
+    fat_offset = partition_offset * SECTOR_SIZE
+    fat_arg = f"{image}@@{fat_offset}"
 
     stage1_size = os.stat(stage1).st_size
     stage2_size = os.stat(stage2).st_size
@@ -103,7 +92,7 @@ def build_disk(image, stage1, stage2, kernel, files, env):
 
     generate_image_file(image, size_sectors)
 
-    print(f"> creating partition table...")
+    print("> creating partition table...")
     device = parted.getDevice(image)
     disk = parted.freshDisk(device, 'msdos')
     freeSpace = disk.getFreeSpaceRegions()
@@ -113,32 +102,38 @@ def build_disk(image, stage1, stage2, kernel, files, env):
     disk.addPartition(partition, constraint=device.optimalAlignedConstraint)
     disk.commit()
 
-    print(f"> formatting file using {file_system}...")
+    print("> formatting file using", file_system, "...")
     create_filesystem(image, file_system, offset=partition_offset)
 
-    print(f"> installing stage1...")
+    print("> installing stage1...")
     install_stage1(image, stage1, offset=partition_offset, stage2_offset=1, stage2_size=stage2_sectors)
 
-    print(f"> installing stage2...")
-    install_stage2(image, stage2, offset=1, limit=partition_offset)
+    print("> installing stage2...")
+    install_stage2(image, stage2, offset=1)
 
-    print(f"> copying kernel...")
-    sh.mmd('-i', image, '::boot')
-    sh.mcopy('-i', image, kernel, '::boot/')
+    print("> copying kernel...")
+    sh.mmd('-i', fat_arg, '::boot')
+    sh.mcopy('-i', fat_arg, kernel, '::boot/kernel.elf')
 
-    print(f"> copying files...")
+    print("> copying files...")
     src_root = env['BASEDIR']
     for file in files:
         file_src = file.srcnode().path
+
+        # Skip ADS (alternate data stream) files or other invalid entries
+        if ':' in os.path.basename(file_src) or not os.path.exists(file_src):
+            print(f"    skipping invalid file: {file_src}")
+            continue
+
         file_rel = os.path.relpath(file_src, src_root)
-        file_dst = '::' + file_rel
+        file_dst = '::' + file_rel.replace("\\", "/")
 
         if os.path.isdir(file_src):
             print('    ... creating directory', file_rel)
-            sh.mmd('-i', image, file_dst)
+            sh.mmd('-i', fat_arg, file_dst)
         else:
-            print('    ... copying', file_rel)
-            sh.mcopy('-i', image, file_src, file_dst)
+            print('    ... copying file:', file_rel)
+            sh.mcopy('-i', fat_arg, file_src, file_dst)
 
 def build_image(target, source, env):
     stage1 = str(source[0])

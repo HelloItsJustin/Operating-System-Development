@@ -1,0 +1,2 @@
+drive i: file="/home/justin/Jetson-Operating-System/build/i686_debug/image.img"
+  offset=1048576
