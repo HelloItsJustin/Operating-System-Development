@@ -13,3 +13,11 @@ __pycache__/
 *.pyc
 .scons*
 *.map
+
+# Windows metadata files
+*Zone.Identifier*
+*Zone - Copy.Identifier*
+
+# Temporary files
+.mtoolsrc*
+*.tmp
