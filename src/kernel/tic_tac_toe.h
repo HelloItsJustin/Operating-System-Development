@@ -1,2 +1,3 @@
 #pragma once
-void tic_tac_toe_main();
+// DEPRECATED - Replaced by Jetson OS Desktop Environment
+// All functionality moved to jetson_desktop.h

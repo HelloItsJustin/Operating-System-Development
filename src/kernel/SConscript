@@ -17,25 +17,38 @@ env.Append(
     ],
     CPPPATH=[
         env.Dir('.').srcnode(),
-        env['PROJECTDIR'].Dir('src/libs'),
-        env['PROJECTDIR'].Dir('src/kernel/arch/i686'),  # ✅ Include arch/i686 for inb/outb
+        env['PROJECTDIR'].Dir('src/libs')
     ],
     ASFLAGS=[
         '-I', env.Dir('.').srcnode(),
-        '-f', 'elf'
     ]
 )
 
-# Collect all .c, .cpp, .asm files (exclude screen.c due to vga_putchar conflict)
-all_c_files = list(chain.from_iterable(GlobRecursive(env, '*.c')))
-sources = [
-    src for src in all_c_files
-    if not IsFileName(src, 'screen.c')
-] + \
-list(chain.from_iterable(GlobRecursive(env, '*.cpp'))) + \
-list(chain.from_iterable(GlobRecursive(env, '*.asm')))
+sources = GlobRecursive(env, '*.c') + \
+          GlobRecursive(env, '*.cpp') + \
+          GlobRecursive(env, '*.asm')
 
-objects = env.Object(sources)
+# FILTER OUT old Jetson files that conflict with the new interactive version
+old_jetson_files = [
+    'jetson_about.c',
+    'jetson_animation.c',
+    'jetson_keyboard.c',
+    'jetson_terminal.c',
+    'jetson_file_browser.c',
+    'jetson_system_info.c',
+    'jetson_desktop.c',
+    'jetson_vga_wrapper.c',
+    'jetson_utils.c',
+]
+
+# Filter sources to exclude old files
+filtered_sources = []
+for source in sources:
+    source_name = str(source).split('/')[-1]
+    if source_name not in old_jetson_files:
+        filtered_sources.append(source)
+
+objects = env.Object(filtered_sources)
 
 # Reorder crt objects
 obj_crti = objects.pop(FindIndex(objects, lambda item: IsFileName(item, 'crti.o')))
@@ -60,10 +73,5 @@ objects = [
 # Link kernel ELF
 kernel = env.Program('kernel.elf', objects)
 
-# Strip symbols for final image
-kernel_stripped = env.Command('kernel-stripped.elf', kernel, '$STRIP -o $TARGET $SOURCE')
-env.Default(kernel_stripped)
-
 # Export for higher-level scripts
 Export('kernel')
-Export('kernel_stripped')

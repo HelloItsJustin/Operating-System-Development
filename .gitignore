@@ -5,3 +5,11 @@ bx_enh_dbg.ini
 .vscode/*.log
 .sconsign.dblite
 __pycache__/
+*.o
+*.a
+*.so
+*.dylib
+.DS_Store
+*.pyc
+.scons*
+*.map

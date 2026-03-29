@@ -11,7 +11,7 @@ all: fat
 
 fat: $(BUILD_DIR)/tools/fat.out
 
-$(BUILD_DIR)/tools/fat.out: $(OBJECTS_ASM) $(OBJECTS_C)
+$(BUILD_DIR)/tools/fat.out: $(OBJECTS_C)
 	@$(CC) $(CFLAGS) -o $@ $(OBJECTS_C)
 
 $(BUILD_DIR)/tools/fat/%.o: %.c always
