@@ -14,12 +14,12 @@ A bootable x86 operating system featuring an unprecedented retro futuristic desk
 
 <p align="center">
  <img src="screenshot.jpg" alt="Jetson OS Boot Screen" width="45%" style="display: inline-block; margin: 10px;"/>
- <img src="screenshot 1.jpg" alt="Jetson OS Desktop" width="45%" style="display: inline-block; margin: 10px;"/>
+ <img src="screenshot%201.jpg" alt="Jetson OS Desktop" width="45%" style="display: inline-block; margin: 10px;"/>
 </p>
 
 <p align="center">
- <img src="screenshot 2.jpg" alt="Jetson OS Application View" width="45%" style="display: inline-block; margin: 10px;"/>
- <img src="screenshot 3.jpg" alt="Jetson OS System Info" width="45%" style="display: inline-block; margin: 10px;"/>
+ <img src="screenshot%202.jpg" alt="Jetson OS Application View" width="45%" style="display: inline-block; margin: 10px;"/>
+ <img src="screenshot%203.jpg" alt="Jetson OS System Info" width="45%" style="display: inline-block; margin: 10px;"/>
 </p>
 
 ---
