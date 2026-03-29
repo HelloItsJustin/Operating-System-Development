@@ -1,4 +1,4 @@
-# 🌌 Jetson Operating System v1.0
+# Jetson Operating System v1.0
 
 <p align="center">
  <b>Cyberpunk-Inspired Futuristic Desktop Environment</b>
@@ -10,41 +10,55 @@ A bootable x86 operating system featuring an unprecedented retro futuristic desk
 
 ---
 
-## 🎯 Jetson OS v1.0 - The Vision
+## Preview
 
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-✨ JETSON OS v1.0 - FEATURE HIGHLIGHTS ✨
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```
+<p align="center">
+ <img src="screenshot.jpg" alt="Jetson OS Boot Screen" width="45%" style="display: inline-block; margin: 10px;"/>
+ <img src="screenshot 1.jpg" alt="Jetson OS Desktop" width="45%" style="display: inline-block; margin: 10px;"/>
+</p>
 
-- 🌟 **Starburst Boot Animation**: Particle-based explosion effect with ASCII starburst
-- 📊 **Real-Time Memory Detection**: Animated loading bar showing system memory
-- 🔄 **Orbital Application Ring**: Rotating menu system with smooth animations
-- 💻 **Command Terminal**: Retro-futuristic shell with glitch effects & color shifts
-- 📁 **File Browser**: Hierarchical tree view with animated expand/collapse
-- 📈 **System Visualization**: Live CPU/memory gauges, process monitoring
-- 🎨 **Cyberpunk Aesthetic**: Cyan/magenta color scheme, pulsing effects
-- ⚡ **Optimized Performance**: 20 FPS frame limiting, efficient double-buffering
+<p align="center">
+ <img src="screenshot 2.jpg" alt="Jetson OS Application View" width="45%" style="display: inline-block; margin: 10px;"/>
+ <img src="screenshot 3.jpg" alt="Jetson OS System Info" width="45%" style="display: inline-block; margin: 10px;"/>
+</p>
 
 ---
 
-## 🛠️ Core Architecture
+## Jetson OS v1.0 - The Vision
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+JETSON OS v1.0 - FEATURE HIGHLIGHTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+- **Starburst Boot Animation**: Particle-based explosion effect with ASCII starburst
+- **Real-Time Memory Detection**: Animated loading bar showing system memory
+- **Orbital Application Ring**: Rotating menu system with smooth animations
+- **Command Terminal**: Retro-futuristic shell with glitch effects & color shifts
+- **File Browser**: Hierarchical tree view with animated expand/collapse
+- **System Visualization**: Live CPU/memory gauges, process monitoring
+- **Cyberpunk Aesthetic**: Cyan/magenta color scheme, pulsing effects
+- **Optimized Performance**: 20 FPS frame limiting, efficient double-buffering
+
+---
+
+## Core Architecture
 
 | Component | Purpose | Status |
 |-----------|---------|--------|
-| Boot Animation | Starburst + memory detection | 🔄 In Progress |
-| Animated ASCII Logo | Multi-frame intro sequence | 📋 Planned |
-| Orbital Ring | Rotating app menu | 📋 Planned |
-| Terminal Shell | Command processing | 📋 Planned |
-| File Browser | Tree navigation | 📋 Planned |
-| System Viz | Live gauges & stats | 📋 Planned |
-| Input Feedback | Glow, ripple effects | 📋 Planned |
-| Polish & Testing | Optimization, cleanup | 📋 Planned |
+| Boot Animation | Starburst + memory detection | In Progress |
+| Animated ASCII Logo | Multi-frame intro sequence | Planned |
+| Orbital Ring | Rotating app menu | Planned |
+| Terminal Shell | Command processing | Planned |
+| File Browser | Tree navigation | Planned |
+| System Viz | Live gauges & stats | Planned |
+| Input Feedback | Glow, ripple effects | Planned |
+| Polish & Testing | Optimization, cleanup | Planned |
 
 ---
 
-## 📂 Directory Structure
+## Directory Structure
 
 ```
 .
@@ -67,7 +81,7 @@ A bootable x86 operating system featuring an unprecedented retro futuristic desk
 
 ---
 
-## 🚀 Build & Run
+## Build & Run
 
 ```bash
 # Install toolchain
@@ -82,7 +96,7 @@ sudo ./scripts/run.sh disk build/i686_debug/image.img
 
 ---
 
-## 🎨 Design Philosophy
+## Design Philosophy
 
 - **Visual First**: Prioritize aesthetic impact and smooth animations
 - **Retro Future**: Blend 80s-90s cyberpunk with modern concepts
@@ -92,7 +106,7 @@ sudo ./scripts/run.sh disk build/i686_debug/image.img
 
 ---
 
-## 📝 Component Breakdown
+## Component Breakdown
 
 ### Boot Animation Engine (6k)
 Particle system + text animator producing character-by-character starburst explosion of "JETSON OS" title, cascading memory detection bar, boot device display with glitch effects.
@@ -120,7 +134,7 @@ Frame rate limiting, efficient rendering, cleanup, optimization passes.
 
 ---
 
-## ✅ Implementation Status
+## Implementation Status
 
 - [x] Project planning & architecture
 - [x] Type definitions & core structs
@@ -138,7 +152,7 @@ Frame rate limiting, efficient rendering, cleanup, optimization passes.
 
 ---
 
-## 🧠 Concepts Demonstrated
+## Concepts Demonstrated
 
 - Particle systems & physics
 - Frame-based animation
@@ -151,7 +165,7 @@ Frame rate limiting, efficient rendering, cleanup, optimization passes.
 
 ---
 
-## 🔮 Future Enhancements
+## Future Enhancements
 
 - Multi-window support
 - Network statistics
